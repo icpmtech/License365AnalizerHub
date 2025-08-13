@@ -1,30 +1,22 @@
+<script>
 /*
- * Common header and footer components for the LicençasHub 365 portal.
- *
- * The `<site-header>` component renders a consistent navigation bar with
- * the portal name and links to all key pages. It highlights the link
- * corresponding to the current page based on the browser pathname. The
- * header uses the existing Tailwind utility classes defined in each page
- * (such as `gradient-bg` and `glass-card`) to ensure stylistic harmony.
- *
- * The `<site-footer>` component provides a simple footer with a
- * copyright notice and automatically updates the year.
+ * LicençasHub 365 – Header & Footer (Mobile‑first, acessível)
+ * - Header sticky + menu hambúrguer em ecrãs pequenos
+ * - Realce da página ativa e aria-current
+ * - Adapta navegação consoante sessão (localStorage.isLoggedIn === 'true')
+ * - Logout limpa estado e redireciona para login.html
  */
 
 class SiteHeader extends HTMLElement {
   connectedCallback() {
-    // Determine the current page from the URL. When hosted at the root
-    // (e.g. `/`), default to `index.html` for highlighting purposes.
+    // 1) Página atual
     let currentPage = window.location.pathname.split('/').pop();
-    if (!currentPage || currentPage === '') {
-      currentPage = 'index.html';
-    }
-    // Determine login state to adapt navigation. Users must log in to
-    // access private areas of the portal. When not logged in, only
-    // public links (home, login and register) are shown; otherwise the
-    // full dashboard and settings links are available along with a
-    // logout option.
+    if (!currentPage) currentPage = 'index.html';
+
+    // 2) Estado de sessão
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+    // 3) Links
     const navPrivate = [
       { href: 'homepage.html', label: 'Início' },
       { href: 'index.html', label: 'Dashboard' },
@@ -42,55 +34,135 @@ class SiteHeader extends HTMLElement {
       { href: 'register.html', label: 'Registar' }
     ];
     const navLinks = isLoggedIn ? navPrivate : navPublic;
-    // Build the navigation HTML, applying an active style to whichever
-    // link matches the current page. Logout is treated specially and
-    // does not receive active styling. Use `/` separators only on
-    // larger screens.
-    const navHtml = navLinks
-      .map(({ href, label, isLogout }) => {
-        const isActive = href === currentPage && !isLogout;
-        const baseClasses = isActive
-          ? 'font-semibold text-gray-900'
-          : 'text-gray-600 hover:text-gray-800';
-        const idAttr = isLogout ? 'id="logoutLink"' : '';
-        // Use # for logout anchor if provided. Otherwise use the href.
-        const linkHref = isLogout ? '#' : href;
-        return `<a ${idAttr} href="${linkHref}" class="${baseClasses}">${label}</a>`;
-      })
-      .join('<span class="mx-2 text-gray-400 hidden sm:inline">/</span>');
-    // Render the header. The gradient background and overlay blur come
-    // from classes defined in the individual pages. The navigation is
-    // placed to the right of the portal branding on larger screens and
-    // wraps below on smaller devices.
+
+    // 4) Render helpers
+    const linkClass = (active) =>
+      [
+        'block px-3 py-2 rounded-lg text-sm',
+        active
+          ? 'bg-white/20 text-white font-semibold'
+          : 'text-white/90 hover:text-white hover:bg-white/10'
+      ].join(' ');
+
+    const makeLink = ({ href, label, isLogout }) => {
+      const linkHref = isLogout ? '#' : href;
+      const isActive = !isLogout && href === currentPage;
+      const aria = isActive ? 'aria-current="page"' : '';
+      const idAttr = isLogout ? 'id="logoutLink"' : '';
+      return `<a ${idAttr} ${aria} href="${linkHref}" class="${linkClass(isActive)}">${label}</a>`;
+    };
+
+    const desktopLinks = navLinks.map(makeLink).join('');
+    const mobileLinks = navLinks
+      .map((l) =>
+        `<li class="border-t border-white/10">${makeLink(l)}</li>`
+      )
+      .join('');
+
+    // 5) HTML (mobile-first)
     this.innerHTML = `
-      <header class="gradient-bg text-white shadow-2xl relative overflow-hidden">
+      <header class="sticky top-0 z-50 gradient-bg text-white shadow-2xl relative">
         <div class="absolute inset-0 bg-black/10"></div>
-        <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0 relative z-10">
-          <div class="flex items-center space-x-3">
-            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-              <span class="text-xl sm:text-2xl">🔒</span>
-            </div>
-            <div>
-              <h1 class="text-lg sm:text-2xl font-bold tracking-wide">LicençasHub 365</h1>
-              <p class="text-blue-100 text-xs sm:text-sm">Gestão centralizada de licenças</p>
-            </div>
+        <div class="relative z-10 max-w-7xl mx-auto px-4 py-3">
+          <div class="flex items-center justify-between">
+            <!-- Branding -->
+            <a href="homepage.html" class="flex items-center gap-3 min-w-0">
+              <span class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shrink-0">🔒</span>
+              <span class="flex flex-col min-w-0">
+                <span class="text-base font-bold tracking-wide truncate">LicençasHub 365</span>
+                <span class="text-xs text-blue-100 truncate">Gestão centralizada de licenças</span>
+              </span>
+            </a>
+
+            <!-- Ações topo (sm+) -->
+            <nav class="hidden sm:flex items-center gap-1" aria-label="Navegação principal">
+              ${desktopLinks}
+            </nav>
+
+            <!-- Botão menu (mobile) -->
+            <button
+              id="menuToggle"
+              class="sm:hidden inline-flex items-center justify-center p-2 rounded-lg ring-1 ring-white/20 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              aria-controls="primary-menu"
+              aria-expanded="false"
+              aria-label="Abrir menu"
+            >
+              <!-- ícone hambúrguer -->
+              <svg id="iconOpen" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+              </svg>
+              <!-- ícone fechar -->
+              <svg id="iconClose" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
           </div>
-          <nav class="flex flex-wrap items-center text-sm sm:text-base gap-x-2 sm:gap-x-4">
-            ${navHtml}
-          </nav>
+
+          <!-- Menu mobile -->
+          <div id="primary-menu" class="sm:hidden hidden mt-3 glass-card rounded-xl overflow-hidden ring-1 ring-white/15 backdrop-blur-md" role="menu">
+            <ul class="py-1" id="mobileMenuList">
+              ${mobileLinks}
+            </ul>
+          </div>
         </div>
       </header>
     `;
-    // After rendering, attach a listener to the logout link if present.
-    const logoutLink = this.querySelector('#logoutLink');
-    if (logoutLink) {
-      logoutLink.addEventListener('click', (evt) => {
-        evt.preventDefault();
-        // Clear login state and redirect to login page.
+
+    // 6) Interações
+    const menu = this.querySelector('#primary-menu');
+    const btn = this.querySelector('#menuToggle');
+    const iconOpen = this.querySelector('#iconOpen');
+    const iconClose = this.querySelector('#iconClose');
+
+    const setExpanded = (expanded) => {
+      btn.setAttribute('aria-expanded', String(expanded));
+      btn.setAttribute('aria-label', expanded ? 'Fechar menu' : 'Abrir menu');
+      if (expanded) {
+        menu.classList.remove('hidden');
+        iconOpen.classList.add('hidden');
+        iconClose.classList.remove('hidden');
+        // foco inicial
+        const firstLink = menu.querySelector('a');
+        if (firstLink) firstLink.focus({ preventScroll: true });
+      } else {
+        menu.classList.add('hidden');
+        iconOpen.classList.remove('hidden');
+        iconClose.classList.add('hidden');
+      }
+    };
+
+    btn?.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      setExpanded(!expanded);
+    });
+
+    // Fechar ao clicar num link (mobile)
+    menu?.addEventListener('click', (e) => {
+      const a = e.target.closest('a');
+      if (!a) return;
+
+      // Logout
+      if (a.id === 'logoutLink') {
+        e.preventDefault();
         localStorage.removeItem('isLoggedIn');
+        setExpanded(false);
         window.location.href = 'login.html';
-      });
-    }
+        return;
+      }
+
+      // Navegação normal fecha menu
+      setExpanded(false);
+    });
+
+    // Fechar com ESC e clique fora
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setExpanded(false);
+    });
+    document.addEventListener('click', (e) => {
+      if (!this.contains(e.target)) setExpanded(false);
+    });
   }
 }
 customElements.define('site-header', SiteHeader);
@@ -99,12 +171,17 @@ class SiteFooter extends HTMLElement {
   connectedCallback() {
     const year = new Date().getFullYear();
     this.innerHTML = `
-      <footer class="bg-gray-100 text-gray-600 text-center py-6 mt-12">
+      <footer class="mt-10">
         <div class="max-w-7xl mx-auto px-4">
-          <p class="text-sm">&copy; ${year} LicençasHub 365. Todos os direitos reservados.</p>
+          <div class="glass-card rounded-2xl py-6 px-4 text-center ring-1 ring-black/5">
+            <p class="text-sm text-gray-600">
+              &copy; ${year} <strong>LicençasHub 365</strong>. Todos os direitos reservados.
+            </p>
+          </div>
         </div>
       </footer>
     `;
   }
 }
 customElements.define('site-footer', SiteFooter);
+</script>
