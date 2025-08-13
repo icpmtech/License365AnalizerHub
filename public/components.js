@@ -1,4 +1,4 @@
-<script>
+
 /*
  * LicençasHub 365 – Header & Footer (Mobile‑first, acessível)
  * - Header sticky + menu hambúrguer em ecrãs pequenos
@@ -184,4 +184,4 @@ class SiteFooter extends HTMLElement {
   }
 }
 customElements.define('site-footer', SiteFooter);
-</script>
+
