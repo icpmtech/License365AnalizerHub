@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Recuperar Palavra‑passe - LicençasHub 365</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @keyframes slideInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-slide-up { animation: slideInUp 0.6s ease-out both; }
+  .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+  .glass-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
+</style>
+<!-- Common Components -->
+<script type="module" src="components.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <!-- Site Header -->
+  <site-header></site-header>
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Hero -->
+    <section class="mt-4">
+      <div class="glass-card p-6 sm:p-8 rounded-2xl shadow-lg flex items-center space-x-4 animate-slide-up">
+        <div class="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+          <span class="text-xl sm:text-2xl">🔁</span>
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-2xl font-bold text-gray-800">Recuperar Palavra‑passe</h1>
+          <p class="text-gray-600 text-sm sm:text-base">Insere o teu email para receber instruções de recuperação</p>
+        </div>
+      </div>
+    </section>
+    <!-- Recovery Form -->
+    <recovery-form></recovery-form>
+  </main>
+  <!-- Footer -->
+  <site-footer></site-footer>
+
+  <script type="module">
+  class RecoveryForm extends HTMLElement {
+    connectedCallback() {
+      this.innerHTML = `
+        <div class="glass-card p-6 sm:p-8 rounded-2xl shadow-lg max-w-md mx-auto mt-8 animate-slide-up">
+          <h2 class="text-xl font-bold mb-4 text-gray-800">Recuperar palavra‑passe</h2>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Email</label>
+              <input type="email" id="recoveryEmail" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2" placeholder="nome@exemplo.com">
+            </div>
+            <div class="flex justify-end">
+              <button id="recoveryButton" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">Enviar</button>
+            </div>
+          </div>
+          <div class="mt-4 text-sm text-gray-600 text-center">
+            <a href="login.html" class="text-blue-600 hover:text-blue-800">Voltar ao login</a>
+          </div>
+        </div>
+      `;
+      const recoveryButton = this.querySelector('#recoveryButton');
+      recoveryButton.addEventListener('click', (evt) => {
+        evt.preventDefault();
+        // Simulando envio de email de recuperação
+        alert('Se existir uma conta com este email, enviámos instruções de recuperação.');
+        window.location.href = 'login.html';
+      });
+    }
+  }
+  customElements.define('recovery-form', RecoveryForm);
+  </script>
+</body>
+</html>

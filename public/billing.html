@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <title>Faturação - Microsoft 365</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Redirect to login if the user is not authenticated -->
+<script>
+  if (localStorage.getItem('isLoggedIn') !== 'true') {
+    window.location.href = 'login.html';
+  }
+</script>
 <!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
