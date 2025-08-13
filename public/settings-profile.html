@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Configurações do Perfil - Microsoft 365</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Custom Styles -->
+<style>
+  @keyframes slideInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-slide-up { animation: slideInUp 0.6s ease-out both; }
+  .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+  .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+<!-- Header -->
+<header class="gradient-bg text-white shadow-2xl relative overflow-hidden">
+  <div class="absolute inset-0 bg-black/10"></div>
+  <div class="max-w-7xl mx-auto px-4 py-6 flex items-center space-x-4 relative z-10">
+    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+      <span class="text-2xl">👤</span>
+    </div>
+    <div>
+      <h1 class="text-xl sm:text-2xl font-bold">Configurações do Perfil</h1>
+      <p class="text-blue-100 text-sm">Atualiza os teus dados pessoais</p>
+    </div>
+  </div>
+</header>
+<!-- Navigation -->
+<nav class="max-w-7xl mx-auto px-4 py-4 text-sm sm:text-base">
+  <a href="index.html" class="text-blue-600 hover:text-blue-800">Dashboard</a>
+  <span class="mx-2 text-gray-400">/</span>
+  <a href="settings-profile.html" class="text-gray-900 font-semibold">Perfil</a>
+  <span class="mx-2 text-gray-400 hidden sm:inline">/</span>
+  <a href="settings-security.html" class="ml-0 sm:ml-4 text-gray-600 hover:text-gray-800">Segurança</a>
+  <span class="mx-2 text-gray-400 hidden sm:inline">/</span>
+  <a href="settings-notifications.html" class="ml-0 sm:ml-4 text-gray-600 hover:text-gray-800">Notificações</a>
+</nav>
+<!-- Content -->
+<main class="max-w-7xl mx-auto px-4 py-8">
+  <profile-form></profile-form>
+</main>
+<script type="module">
+class ProfileForm extends HTMLElement {
+  connectedCallback() {
+    this.innerHTML = `
+      <div class="glass-card p-6 sm:p-8 rounded-2xl shadow-lg max-w-lg mx-auto animate-slide-up">
+        <h2 class="text-xl font-bold mb-4 text-gray-800">Dados do Perfil</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Nome</label>
+            <input type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2" placeholder="João da Silva">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Email</label>
+            <input type="email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2" placeholder="joao@example.com">
+          </div>
+          <div class="flex justify-end">
+            <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">Guardar</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+}
+customElements.define('profile-form', ProfileForm);
+</script>
+</body>
+</html>

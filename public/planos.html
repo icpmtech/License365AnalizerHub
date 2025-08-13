@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Planos - Microsoft 365</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  /* Reuse animations and styles */
+  @keyframes slideInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-slide-up { animation: slideInUp 0.6s ease-out both; }
+  .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+  .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+<!-- Header -->
+<header class="gradient-bg text-white shadow-2xl relative overflow-hidden">
+  <div class="absolute inset-0 bg-black/10"></div>
+  <div class="max-w-7xl mx-auto px-4 py-6 flex items-center space-x-4 relative z-10">
+    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+      <span class="text-2xl">📦</span>
+    </div>
+    <div>
+      <h1 class="text-xl sm:text-2xl font-bold">Planos</h1>
+      <p class="text-blue-100 text-sm">Explora as opções de subscrição</p>
+    </div>
+  </div>
+</header>
+<!-- Navigation -->
+<nav class="max-w-7xl mx-auto px-4 py-4 text-sm sm:text-base">
+  <a href="homepage.html" class="text-blue-600 hover:text-blue-800">Início</a>
+  <span class="mx-2 text-gray-400">/</span>
+  <a href="index.html" class="ml-0 sm:ml-4 text-gray-600 hover:text-gray-800">Dashboard</a>
+  <span class="mx-2 text-gray-400 hidden sm:inline">/</span>
+  <a href="planos.html" class="text-gray-900 font-semibold">Planos</a>
+  <span class="mx-2 text-gray-400 hidden sm:inline">/</span>
+  <a href="billing.html" class="ml-0 sm:ml-4 text-gray-600 hover:text-gray-800">Faturação</a>
+  <span class="mx-2 text-gray-400 hidden sm:inline">/</span>
+  <a href="settings-profile.html" class="ml-0 sm:ml-4 text-gray-600 hover:text-gray-800">Perfil</a>
+  <span class="mx-2 text-gray-400 hidden sm:inline">/</span>
+  <a href="settings-security.html" class="ml-0 sm:ml-4 text-gray-600 hover:text-gray-800">Segurança</a>
+  <span class="mx-2 text-gray-400 hidden sm:inline">/</span>
+  <a href="settings-notifications.html" class="ml-0 sm:ml-4 text-gray-600 hover:text-gray-800">Notificações</a>
+</nav>
+<!-- Content -->
+<main class="max-w-7xl mx-auto px-4 py-8">
+  <plan-cards></plan-cards>
+</main>
+<script type="module">
+class PlanCards extends HTMLElement {
+  connectedCallback() {
+    this.innerHTML = `
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Plano E3 -->
+        <div class="glass-card p-6 sm:p-8 rounded-2xl shadow-lg animate-slide-up">
+          <h3 class="text-lg font-bold mb-2 text-gray-800">Microsoft 365 E3</h3>
+          <p class="text-sm text-gray-600 mb-4">Produtividade essencial para empresas</p>
+          <ul class="text-sm text-gray-700 space-y-1 mb-4">
+            <li>Aplicações Office Web e Desktop</li>
+            <li>Segurança básica</li>
+            <li>Armazenamento cloud 1&nbsp;TB</li>
+          </ul>
+          <div class="text-2xl font-bold mb-4">€15/mês</div>
+          <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">Selecionar</button>
+        </div>
+        <!-- Plano E5 -->
+        <div class="glass-card p-6 sm:p-8 rounded-2xl shadow-lg animate-slide-up">
+          <h3 class="text-lg font-bold mb-2 text-gray-800">Microsoft 365 E5</h3>
+          <p class="text-sm text-gray-600 mb-4">O mais avançado pacote de segurança e produtividade</p>
+          <ul class="text-sm text-gray-700 space-y-1 mb-4">
+            <li>Tudo do E3 + Proteção Avançada</li>
+            <li>Power BI Pro</li>
+            <li>Compliance e Governança</li>
+          </ul>
+          <div class="text-2xl font-bold mb-4">€38/mês</div>
+          <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">Selecionar</button>
+        </div>
+        <!-- Plano F3 -->
+        <div class="glass-card p-6 sm:p-8 rounded-2xl shadow-lg animate-slide-up">
+          <h3 class="text-lg font-bold mb-2 text-gray-800">Microsoft 365 F3</h3>
+          <p class="text-sm text-gray-600 mb-4">Ideal para colaboradores de primeira linha</p>
+          <ul class="text-sm text-gray-700 space-y-1 mb-4">
+            <li>Aplicações Office Web</li>
+            <li>Teams e SharePoint</li>
+            <li>Armazenamento cloud 2&nbsp;GB</li>
+          </ul>
+          <div class="text-2xl font-bold mb-4">€4/mês</div>
+          <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">Selecionar</button>
+        </div>
+      </div>
+    `;
+  }
+}
+customElements.define('plan-cards', PlanCards);
+</script>
+</body>
+</html>

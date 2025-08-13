@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Faturação - Microsoft 365</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  /* Reuse animations and styles */
+  @keyframes slideInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-slide-up { animation: slideInUp 0.6s ease-out both; }
+  .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+  .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+<!-- Header -->
+<header class="gradient-bg text-white shadow-2xl relative overflow-hidden">
+  <div class="absolute inset-0 bg-black/10"></div>
+  <div class="max-w-7xl mx-auto px-4 py-6 flex items-center space-x-4 relative z-10">
+    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+      <span class="text-2xl">💳</span>
+    </div>
+    <div>
+      <h1 class="text-xl sm:text-2xl font-bold">Faturação</h1>
+      <p class="text-blue-100 text-sm">Consulta detalhes de pagamento e faturas</p>
+    </div>
+  </div>
+</header>
+<!-- Navigation -->
+<nav class="max-w-7xl mx-auto px-4 py-4 text-sm sm:text-base">
+  <a href="homepage.html" class="text-blue-600 hover:text-blue-800">Início</a>
+  <span class="mx-2 text-gray-400">/</span>
+  <a href="index.html" class="ml-0 sm:ml-4 text-gray-600 hover:text-gray-800">Dashboard</a>
+  <span class="mx-2 text-gray-400 hidden sm:inline">/</span>
+  <a href="planos.html" class="ml-0 sm:ml-4 text-gray-600 hover:text-gray-800">Planos</a>
+  <span class="mx-2 text-gray-400 hidden sm:inline">/</span>
+  <a href="billing.html" class="text-gray-900 font-semibold">Faturação</a>
+  <span class="mx-2 text-gray-400 hidden sm:inline">/</span>
+  <a href="settings-profile.html" class="ml-0 sm:ml-4 text-gray-600 hover:text-gray-800">Perfil</a>
+  <span class="mx-2 text-gray-400 hidden sm:inline">/</span>
+  <a href="settings-security.html" class="ml-0 sm:ml-4 text-gray-600 hover:text-gray-800">Segurança</a>
+  <span class="mx-2 text-gray-400 hidden sm:inline">/</span>
+  <a href="settings-notifications.html" class="ml-0 sm:ml-4 text-gray-600 hover:text-gray-800">Notificações</a>
+</nav>
+<!-- Content -->
+<main class="max-w-7xl mx-auto px-4 py-8">
+  <billing-info></billing-info>
+</main>
+<script type="module">
+class BillingInfo extends HTMLElement {
+  connectedCallback() {
+    this.innerHTML = `
+      <div class="glass-card p-6 sm:p-8 rounded-2xl shadow-lg max-w-lg mx-auto animate-slide-up">
+        <h2 class="text-xl font-bold mb-4 text-gray-800">Detalhes de Faturação</h2>
+        <div class="space-y-2 text-sm text-gray-700">
+          <div><strong>Plano Atual:</strong> Microsoft 365 E3</div>
+          <div><strong>Data de Renovação:</strong> 13-09-2025</div>
+          <div><strong>Método de Pagamento:</strong> Cartão Visa</div>
+        </div>
+        <div class="mt-4 text-right">
+          <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">Atualizar Método</button>
+        </div>
+      </div>
+      <div class="glass-card p-6 sm:p-8 rounded-2xl shadow-lg max-w-3xl mx-auto mt-8 animate-slide-up">
+        <h2 class="text-xl font-bold mb-4 text-gray-800">Histórico de Faturas</h2>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead>
+              <tr class="border-b-2 border-gray-200">
+                <th class="px-4 py-2 text-left">Data</th>
+                <th class="px-4 py-2 text-left">ID da Fatura</th>
+                <th class="px-4 py-2 text-left">Valor</th>
+                <th class="px-4 py-2 text-left">Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-gray-100">
+                <td class="px-4 py-2">2025-07-31</td>
+                <td class="px-4 py-2">INV-001234</td>
+                <td class="px-4 py-2">€150,00</td>
+                <td class="px-4 py-2"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Pago</span></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-4 py-2">2025-06-30</td>
+                <td class="px-4 py-2">INV-001233</td>
+                <td class="px-4 py-2">€150,00</td>
+                <td class="px-4 py-2"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Pago</span></td>
+              </tr>
+              <tr class="border-b border-gray-100">
+                <td class="px-4 py-2">2025-05-31</td>
+                <td class="px-4 py-2">INV-001232</td>
+                <td class="px-4 py-2">€150,00</td>
+                <td class="px-4 py-2"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Pago</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  }
+}
+customElements.define('billing-info', BillingInfo);
+</script>
+</body>
+</html>

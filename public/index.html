@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - Licenciamento Microsoft 365 (Mobile First)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Custom Styles -->
+  <style>
+    /* Animations */
+    @keyframes slideInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .animate-slide-up { animation: slideInUp 0.6s ease-out both; }
+    .animate-fade-in { animation: fadeIn 0.8s ease-out both; }
+    .animate-pulse-subtle { animation: pulse 2s ease-in-out infinite; }
+    .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
+    .status-badge { position: relative; overflow: hidden; }
+    .status-badge::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); transition: left 0.5s; }
+    .status-badge:hover::before { left: 100%; }
+    .metric-card { transition: all 0.3s ease; position: relative; overflow: hidden; }
+    .metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.8), transparent); transform: translateX(-100%); transition: transform 0.8s ease; }
+    .metric-card:hover::before { transform: translateX(100%); }
+    .metric-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <!-- Animated Background -->
+  <div class="fixed inset-0 opacity-30 pointer-events-none">
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-purple-400/20 to-pink-400/20"></div>
+    <div class="absolute top-1/4 left-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-blue-400/10 rounded-full blur-3xl animate-pulse"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-purple-400/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="gradient-bg text-white shadow-2xl relative overflow-hidden">
+    <div class="absolute inset-0 bg-black/10"></div>
+    <div class="max-w-7xl mx-auto px-4 py-6 relative z-10 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+      <div class="flex items-center space-x-4">
+        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+          <span class="text-2xl">🔒</span>
+        </div>
+        <div>
+          <h1 class="text-xl sm:text-2xl font-bold tracking-wide">Licenciamento Microsoft 365</h1>
+          <p class="text-blue-100 text-sm">Gestão centralizada de licenças</p>
+        </div>
+      </div>
+      <div class="sm:text-right">
+        <div class="glass-card px-4 py-2 rounded-full">
+          <span class="text-xs sm:text-sm opacity-90">Última atualização</span>
+          <div id="lastUpdate" class="text-sm sm:text-base font-semibold">--</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dashboard Cards -->
+  <section class="max-w-7xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="metric-card glass-card p-6 rounded-2xl shadow-lg animate-slide-up">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-sm font-medium text-gray-600">Licenças Ativas</h2>
+          <div class="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-full flex items-center justify-center">
+            <span class="text-green-600 text-lg">✓</span>
+          </div>
+        </div>
+        <p id="activeLicenses" class="text-3xl sm:text-4xl font-bold text-green-600 mb-2">0</p>
+        <div class="flex items-center text-xs sm:text-sm text-green-600">
+          <span class="mr-1">↗</span>
+          <span>+12% este mês</span>
+        </div>
+      </div>
+      <div class="metric-card glass-card p-6 rounded-2xl shadow-lg animate-slide-up delay-100">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-sm font-medium text-gray-600">Licenças Expiradas</h2>
+          <div class="w-8 h-8 sm:w-10 sm:h-10 bg-red-100 rounded-full flex items-center justify-center">
+            <span class="text-red-600 text-lg">⚠</span>
+          </div>
+        </div>
+        <p id="expiredLicenses" class="text-3xl sm:text-4xl font-bold text-red-600 mb-2">0</p>
+        <div class="flex items-center text-xs sm:text-sm text-red-600">
+          <span class="mr-1">↘</span>
+          <span>-5% este mês</span>
+        </div>
+      </div>
+      <div class="metric-card glass-card p-6 rounded-2xl shadow-lg animate-slide-up delay-200">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-sm font-medium text-gray-600">Licenças Disponíveis</h2>
+          <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-full flex items-center justify-center">
+            <span class="text-blue-600 text-lg">📦</span>
+          </div>
+        </div>
+        <p id="availableLicenses" class="text-3xl sm:text-4xl font-bold text-blue-600 mb-2">0</p>
+        <div class="flex items-center text-xs sm:text-sm text-blue-600">
+          <span class="mr-1">→</span>
+          <span>Estável</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Charts -->
+  <section class="max-w-7xl mx-auto px-4 py-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div class="chart-container glass-card p-6 sm:p-8 rounded-2xl shadow-lg animate-fade-in">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg sm:text-xl font-semibold text-gray-800">Utilização por Produto</h3>
+          <div class="hidden sm:flex space-x-2">
+            <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+            <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+          </div>
+        </div>
+        <div class="h-64 sm:h-72">
+          <canvas id="productChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-container glass-card p-6 sm:p-8 rounded-2xl shadow-lg animate-fade-in delay-200">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg sm:text-xl font-semibold text-gray-800">Tendência de Licenças</h3>
+          <div class="px-2 sm:px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">
+            Últimos 6 meses
+          </div>
+        </div>
+        <div class="h-64 sm:h-72">
+          <canvas id="trendChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Actions -->
+  <section class="max-w-7xl mx-auto px-4 py-6">
+    <div class="glass-card p-6 rounded-2xl shadow-lg">
+      <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-4">Ações Rápidas</h3>
+      <div class="flex flex-wrap gap-3">
+        <button class="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 text-sm sm:text-base">
+          + Adicionar Licença
+        </button>
+        <button class="px-4 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 text-sm sm:text-base">
+          📊 Relatório
+        </button>
+        <!-- Navega para as páginas de configurações do utilizador -->
+        <a href="settings-profile.html" class="px-4 py-2 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 text-sm sm:text-base">
+          ⚙️ Configurações
+        </a>
+        <button class="px-4 py-2 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 text-sm sm:text-base">
+          🔄 Sincronizar
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Licenses Table & List -->
+  <section class="max-w-7xl mx-auto px-4 py-6 pb-12">
+    <div class="glass-card p-6 sm:p-8 rounded-2xl shadow-lg overflow-hidden">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 space-y-4 sm:space-y-0">
+        <h3 class="text-lg sm:text-xl font-semibold text-gray-800">Detalhe de Licenças</h3>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-3 space-y-2 sm:space-y-0 w-full sm:w-auto">
+          <div class="relative w-full sm:w-64">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+            <input id="searchInput" type="text" placeholder="Pesquisar licenças..." class="pl-9 pr-4 py-2 border border-gray-200 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 w-full">
+          </div>
+          <button class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors w-min self-center sm:self-auto">
+            <span class="text-gray-600">⚙️</span>
+          </button>
+        </div>
+      </div>
+      <!-- Mobile list -->
+      <div id="licenseList" class="flex flex-col space-y-4 md:hidden"></div>
+      <!-- Table for medium and up -->
+      <div class="hidden md:block overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead>
+            <tr class="border-b-2 border-gray-200">
+              <th class="px-6 py-4 text-left font-semibold text-gray-700">Produto</th>
+              <th class="px-6 py-4 text-left font-semibold text-gray-700">Utilizadores</th>
+              <th class="px-6 py-4 text-left font-semibold text-gray-700">Disponíveis</th>
+              <th class="px-6 py-4 text-left font-semibold text-gray-700">Estado</th>
+              <th class="px-6 py-4 text-left font-semibold text-gray-700">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="licenseTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Script -->
+  <script>
+    // Sample license data
+    const licenseData = [
+      { product: "Microsoft 365 E3", users: 120, available: 30, status: "Ativo", lastSync: "2 min atrás" },
+      { product: "Microsoft 365 E5", users: 80, available: 20, status: "Ativo", lastSync: "5 min atrás" },
+      { product: "Office 365 Business Premium", users: 50, available: 0, status: "Expirado", lastSync: "1 hora atrás" },
+      { product: "Microsoft 365 F3", users: 200, available: 75, status: "Ativo", lastSync: "1 min atrás" },
+      { product: "Office 365 E1", users: 35, available: 15, status: "Ativo", lastSync: "3 min atrás" }
+    ];
+
+    let searchTerm = '';
+
+    function updateDashboard() {
+      // Filter data based on search term
+      const filteredData = licenseData.filter(l => {
+        const text = `${l.product} ${l.status}`.toLowerCase();
+        return text.includes(searchTerm);
+      });
+
+      // Metrics: use overall counts (not filtered) for dashboard counters
+      const active = licenseData.filter(l => l.status === "Ativo").length;
+      const expired = licenseData.filter(l => l.status === "Expirado").length;
+      const available = licenseData.reduce((sum, l) => sum + l.available, 0);
+
+      // Animated counter effect
+      animateValue("activeLicenses", 0, active, 800);
+      animateValue("expiredLicenses", 0, expired, 1000);
+      animateValue("availableLicenses", 0, available, 1200);
+
+      // Update last update time
+      document.getElementById("lastUpdate").textContent = new Date().toLocaleString('pt-PT');
+
+      // Populate table for medium and up
+      const tbody = document.getElementById("licenseTable");
+      tbody.innerHTML = "";
+      filteredData.forEach((l, index) => {
+        const statusColor = l.status === "Ativo" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800";
+        const utilizationPercent = Math.round((l.users / (l.users + l.available)) * 100);
+        const row = document.createElement('tr');
+        row.className = "border-b border-gray-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-transparent";
+        row.innerHTML = `
+          <td class="px-6 py-4">
+            <div class="font-medium text-gray-900">${l.product}</div>
+            <div class="text-xs text-gray-500">Última sincronização: ${l.lastSync}</div>
+          </td>
+          <td class="px-6 py-4">
+            <div class="font-medium text-gray-900">${l.users}</div>
+            <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+              <div class="bg-blue-600 h-2 rounded-full transition-all duration-1000" style="width: ${utilizationPercent}%"></div>
+            </div>
+          </td>
+          <td class="px-6 py-4 font-medium text-gray-900">${l.available}</td>
+          <td class="px-6 py-4">
+            <span class="status-badge px-3 py-1 rounded-full text-xs font-medium ${statusColor}">
+              ${l.status}
+            </span>
+          </td>
+          <td class="px-6 py-4">
+            <div class="flex space-x-2">
+              <button class="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Editar">✏️</button>
+              <button class="p-1 text-green-600 hover:bg-green-50 rounded transition-colors" title="Detalhes">👁️</button>
+              <button class="p-1 text-purple-600 hover:bg-purple-50 rounded transition-colors" title="Relatório">📊</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      // Populate mobile list
+      const list = document.getElementById("licenseList");
+      list.innerHTML = "";
+      filteredData.forEach((l) => {
+        const statusColor = l.status === "Ativo" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800";
+        const utilizationPercent = Math.round((l.users / (l.users + l.available)) * 100);
+        const card = document.createElement('div');
+        card.className = "glass-card p-4 rounded-xl shadow hover:shadow-lg transition-all duration-300";
+        card.innerHTML = `
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <div class="font-medium text-gray-900">${l.product}</div>
+              <div class="text-xs text-gray-500">Última sincronização: ${l.lastSync}</div>
+            </div>
+            <span class="status-badge px-3 py-1 rounded-full text-xs font-medium ${statusColor}">${l.status}</span>
+          </div>
+          <div class="mb-2">
+            <div class="text-sm font-medium text-gray-700">Utilizadores: ${l.users}</div>
+            <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+              <div class="bg-blue-600 h-2 rounded-full transition-all duration-1000" style="width: ${utilizationPercent}%"></div>
+            </div>
+          </div>
+          <div class="mb-2 text-sm font-medium text-gray-700">Disponíveis: ${l.available}</div>
+          <div class="flex space-x-2 pt-2">
+            <button class="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors text-lg" title="Editar">✏️</button>
+            <button class="p-1 text-green-600 hover:bg-green-50 rounded transition-colors text-lg" title="Detalhes">👁️</button>
+            <button class="p-1 text-purple-600 hover:bg-purple-50 rounded transition-colors text-lg" title="Relatório">📊</button>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    function animateValue(id, start, end, duration) {
+      const obj = document.getElementById(id);
+      const range = end - start;
+      const minTimer = 50;
+      let stepTime = Math.abs(Math.floor(duration / (range || 1)));
+      stepTime = Math.max(stepTime, minTimer);
+      const startTime = new Date().getTime();
+      const endTime = startTime + duration;
+      function run() {
+        const now = new Date().getTime();
+        const remaining = Math.max((endTime - now) / duration, 0);
+        const value = Math.round(end - (remaining * range));
+        obj.textContent = value;
+        if (value !== end) {
+          requestAnimationFrame(run);
+        }
+      }
+      run();
+    }
+
+    // Charts rendering
+    function renderCharts() {
+      // Product Chart
+      new Chart(document.getElementById('productChart'), {
+        type: 'doughnut',
+        data: {
+          labels: licenseData.map(l => l.product),
+          datasets: [{
+            data: licenseData.map(l => l.users),
+            backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444'],
+            borderWidth: 0,
+            hoverBorderWidth: 3,
+            hoverBorderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                padding: 20,
+                usePointStyle: true,
+                font: { size: 12 }
+              }
+            }
+          },
+          animation: { animateScale: true, animateRotate: true, duration: 2000 }
+        }
+      });
+
+      // Trend Chart
+      new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: {
+          labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+          datasets: [{
+            label: 'Licenças Ativas',
+            data: [150, 160, 155, 170, 165, 180],
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: '#ffffff',
+            pointBorderColor: '#3b82f6',
+            pointBorderWidth: 3,
+            pointRadius: 5,
+            pointHoverRadius: 7
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: { beginAtZero: false, grid: { color: 'rgba(0,0,0,0.05)' } },
+            x: { grid: { display: false } }
+          },
+          animation: { duration: 2000, easing: 'easeInOutQuart' }
+        }
+      });
+    }
+
+    // Search input event
+    document.getElementById("searchInput").addEventListener("input", function() {
+      searchTerm = this.value.trim().toLowerCase();
+      updateDashboard();
+    });
+
+    // Initial render
+    document.addEventListener('DOMContentLoaded', () => {
+      updateDashboard();
+      renderCharts();
+      setInterval(updateDashboard, 30000);
+    });
+  </script>
+
+</body>
+</html>

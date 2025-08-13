@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Configurações de Notificações - Microsoft 365</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @keyframes slideInUp { from { opacity:0; transform: translateY(30px);} to{ opacity:1; transform: translateY(0);} }
+  .animate-slide-up { animation: slideInUp 0.6s ease-out both; }
+  .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+  .glass-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+<!-- Header -->
+<header class="gradient-bg text-white shadow-2xl relative overflow-hidden">
+  <div class="absolute inset-0 bg-black/10"></div>
+  <div class="max-w-7xl mx-auto px-4 py-6 flex items-center space-x-4 relative z-10">
+    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+      <span class="text-2xl">🔔</span>
+    </div>
+    <div>
+      <h1 class="text-xl sm:text-2xl font-bold">Configurações de Notificações</h1>
+      <p class="text-blue-100 text-sm">Ajusta as tuas preferências de notificação</p>
+    </div>
+  </div>
+</header>
+<!-- Navigation -->
+<nav class="max-w-7xl mx-auto px-4 py-4 text-sm sm:text-base">
+  <a href="index.html" class="text-blue-600 hover:text-blue-800">Dashboard</a>
+  <span class="mx-2 text-gray-400">/</span>
+  <a href="settings-profile.html" class="ml-0 sm:ml-4 text-gray-600 hover:text-gray-800">Perfil</a>
+  <span class="mx-2 text-gray-400 hidden sm:inline">/</span>
+  <a href="settings-security.html" class="ml-0 sm:ml-4 text-gray-600 hover:text-gray-800">Segurança</a>
+  <span class="mx-2 text-gray-400 hidden sm:inline">/</span>
+  <a href="settings-notifications.html" class="text-gray-900 font-semibold">Notificações</a>
+</nav>
+<!-- Content -->
+<main class="max-w-7xl mx-auto px-4 py-8">
+  <notification-settings></notification-settings>
+</main>
+<script type="module">
+class NotificationSettings extends HTMLElement {
+  connectedCallback() {
+    this.innerHTML = `
+      <div class="glass-card p-6 sm:p-8 rounded-2xl shadow-lg max-w-lg mx-auto animate-slide-up">
+        <h2 class="text-xl font-bold mb-4 text-gray-800">Preferências de Notificação</h2>
+        <div class="space-y-4">
+          <div class="flex items-center">
+            <input id="emailNotifications" type="checkbox" class="mr-2 h-5 w-5 text-blue-600 rounded focus:ring-blue-500">
+            <label for="emailNotifications" class="text-sm font-medium text-gray-700">Notificações por email</label>
+          </div>
+          <div class="flex items-center">
+            <input id="expiryNotifications" type="checkbox" class="mr-2 h-5 w-5 text-blue-600 rounded focus:ring-blue-500" checked>
+            <label for="expiryNotifications" class="text-sm font-medium text-gray-700">Alertas de expiração de licença</label>
+          </div>
+          <div class="flex items-center">
+            <input id="monthlyReport" type="checkbox" class="mr-2 h-5 w-5 text-blue-600 rounded focus:ring-blue-500">
+            <label for="monthlyReport" class="text-sm font-medium text-gray-700">Relatório mensal</label>
+          </div>
+          <div class="flex items-center">
+            <input id="productUpdates" type="checkbox" class="mr-2 h-5 w-5 text-blue-600 rounded focus:ring-blue-500" checked>
+            <label for="productUpdates" class="text-sm font-medium text-gray-700">Notificações de atualizações de produto</label>
+          </div>
+          <div class="flex justify-end pt-2">
+            <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">Guardar Preferências</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+}
+customElements.define('notification-settings', NotificationSettings);
+</script>
+</body>
+</html>
