@@ -19,9 +19,13 @@ class SiteHeader extends HTMLElement {
     if (!currentPage || currentPage === '') {
       currentPage = 'index.html';
     }
-    // Define the navigation links for the portal. Each entry contains
-    // the relative href and the label shown to the user.
-    const navLinks = [
+    // Determine login state to adapt navigation. Users must log in to
+    // access private areas of the portal. When not logged in, only
+    // public links (home, login and register) are shown; otherwise the
+    // full dashboard and settings links are available along with a
+    // logout option.
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const navPrivate = [
       { href: 'homepage.html', label: 'Início' },
       { href: 'index.html', label: 'Dashboard' },
       { href: 'planos.html', label: 'Planos' },
@@ -29,18 +33,29 @@ class SiteHeader extends HTMLElement {
       { href: 'graph.html', label: 'Métricas' },
       { href: 'settings-profile.html', label: 'Perfil' },
       { href: 'settings-security.html', label: 'Segurança' },
-      { href: 'settings-notifications.html', label: 'Notificações' }
+      { href: 'settings-notifications.html', label: 'Notificações' },
+      { href: '#logout', label: 'Sair', isLogout: true }
     ];
-    // Build the HTML for navigation items, applying an active style to
-    // whichever link matches the current page. On smaller screens the
-    // links wrap gracefully thanks to `flex-wrap`.
+    const navPublic = [
+      { href: 'homepage.html', label: 'Início' },
+      { href: 'login.html', label: 'Entrar' },
+      { href: 'register.html', label: 'Registar' }
+    ];
+    const navLinks = isLoggedIn ? navPrivate : navPublic;
+    // Build the navigation HTML, applying an active style to whichever
+    // link matches the current page. Logout is treated specially and
+    // does not receive active styling. Use `/` separators only on
+    // larger screens.
     const navHtml = navLinks
-      .map(({ href, label }) => {
-        const isActive = href === currentPage;
+      .map(({ href, label, isLogout }) => {
+        const isActive = href === currentPage && !isLogout;
         const baseClasses = isActive
           ? 'font-semibold text-gray-900'
           : 'text-gray-600 hover:text-gray-800';
-        return `<a href="${href}" class="${baseClasses}">${label}</a>`;
+        const idAttr = isLogout ? 'id="logoutLink"' : '';
+        // Use # for logout anchor if provided. Otherwise use the href.
+        const linkHref = isLogout ? '#' : href;
+        return `<a ${idAttr} href="${linkHref}" class="${baseClasses}">${label}</a>`;
       })
       .join('<span class="mx-2 text-gray-400 hidden sm:inline">/</span>');
     // Render the header. The gradient background and overlay blur come
@@ -66,6 +81,16 @@ class SiteHeader extends HTMLElement {
         </div>
       </header>
     `;
+    // After rendering, attach a listener to the logout link if present.
+    const logoutLink = this.querySelector('#logoutLink');
+    if (logoutLink) {
+      logoutLink.addEventListener('click', (evt) => {
+        evt.preventDefault();
+        // Clear login state and redirect to login page.
+        localStorage.removeItem('isLoggedIn');
+        window.location.href = 'login.html';
+      });
+    }
   }
 }
 customElements.define('site-header', SiteHeader);
