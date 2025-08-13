@@ -16,39 +16,28 @@
   .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
   .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
 </style>
+
+<!-- Common Components -->
+<script type="module" src="components.js"></script>
 </head>
 <body class="bg-gray-50 min-h-screen">
-<!-- Header -->
-<header class="gradient-bg text-white shadow-2xl relative overflow-hidden">
-  <div class="absolute inset-0 bg-black/10"></div>
-  <div class="max-w-7xl mx-auto px-4 py-6 flex items-center space-x-4 relative z-10">
-    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-      <span class="text-2xl">📦</span>
-    </div>
-    <div>
-      <h1 class="text-xl sm:text-2xl font-bold">Planos</h1>
-      <p class="text-blue-100 text-sm">Explora as opções de subscrição</p>
-    </div>
-  </div>
-</header>
-<!-- Navigation -->
-<nav class="max-w-7xl mx-auto px-4 py-4 text-sm sm:text-base">
-  <a href="homepage.html" class="text-blue-600 hover:text-blue-800">Início</a>
-  <span class="mx-2 text-gray-400">/</span>
-  <a href="index.html" class="ml-0 sm:ml-4 text-gray-600 hover:text-gray-800">Dashboard</a>
-  <span class="mx-2 text-gray-400 hidden sm:inline">/</span>
-  <a href="planos.html" class="text-gray-900 font-semibold">Planos</a>
-  <span class="mx-2 text-gray-400 hidden sm:inline">/</span>
-  <a href="billing.html" class="ml-0 sm:ml-4 text-gray-600 hover:text-gray-800">Faturação</a>
-  <span class="mx-2 text-gray-400 hidden sm:inline">/</span>
-  <a href="settings-profile.html" class="ml-0 sm:ml-4 text-gray-600 hover:text-gray-800">Perfil</a>
-  <span class="mx-2 text-gray-400 hidden sm:inline">/</span>
-  <a href="settings-security.html" class="ml-0 sm:ml-4 text-gray-600 hover:text-gray-800">Segurança</a>
-  <span class="mx-2 text-gray-400 hidden sm:inline">/</span>
-  <a href="settings-notifications.html" class="ml-0 sm:ml-4 text-gray-600 hover:text-gray-800">Notificações</a>
-</nav>
+<!-- Site Header -->
+<site-header></site-header>
 <!-- Content -->
 <main class="max-w-7xl mx-auto px-4 py-8">
+  <!-- Page Hero -->
+  <section class="mt-4">
+    <div class="glass-card p-6 sm:p-8 rounded-2xl shadow-lg flex items-center space-x-4">
+      <div class="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+        <span class="text-xl sm:text-2xl">📦</span>
+      </div>
+      <div>
+        <h1 class="text-lg sm:text-2xl font-bold text-gray-800">Planos</h1>
+        <p class="text-gray-600 text-sm sm:text-base">Explora as opções de subscrição</p>
+      </div>
+    </div>
+  </section>
+  <!-- Plans content -->
   <plan-cards></plan-cards>
 </main>
 <script type="module">
@@ -98,5 +87,7 @@ class PlanCards extends HTMLElement {
 }
 customElements.define('plan-cards', PlanCards);
 </script>
+<!-- Site Footer -->
+<site-footer></site-footer>
 </body>
 </html>
